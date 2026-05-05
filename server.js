@@ -1,76 +1,113 @@
-import express  from 'express' // we use require to import that code into this file.
+import express from 'express'
+// express is a Node.js framework that makes it easy to create a server and define routes
 
-import movies from './movies.js' //imports the info from a file called movies.js  
+import movies from './movies.js'
+// imports the movies array from movies.js — this acts as our mock database
 
-const app = express() // creating a new express app
-app.use(express.json()) //this is saying use json to receive data
+const app = express() // creates a new express application
+app.use(express.json()) // middleware that parses incoming requests with JSON bodies so we can access req.body
 
+// ─────────────────────────────────────────────
+// ROUTES
+// A route listens for a specific HTTP method + URL path
+// and runs a callback function with (req, res) when matched
+// req = what the client sends | res = what we send back
+// ─────────────────────────────────────────────
 
-//first route, name of the route and funtion.
-//When you go to that route("/") execute that function. Patameters request and response
+// GET "/" — Welcome message, confirms the server is running
 app.get("/", (req, res) => {
-    res.json({ //turns this into json
-        message: "Welcome to the movie watchlist server." // when the user go to this route/ they will see this message
+    res.json({ // res.json() sends a response as JSON and sets the Content-Type header automatically
+        message: "Welcome to the movie watchlist server."
     })
 })
 
-app.get("/movies", (req, res) => { //whe using this route /movies, sent the list of movies as json
+// GET "/movies" — Returns the full list of movies
+app.get("/movies", (req, res) => {
     res.json(movies)
 })
 
-
+// GET "/movies/actor/:actorName" — Returns all movies featuring a specific actor
+// .filter() returns an array of all matches (vs .find() which returns only the first)
+// .includes() checks if the starring array contains the given actor name
+// ⚠️ This route has a conflict with "/movies/:name" above — since :name catches everything,
+// "/movies/actor/:actorName" will never be reached. Move it above "/movies/:name" to fix this.
 app.get("/movies/actor/:actorName", (req, res) => {
-    res.json(movies.filter(movie => 
-        movie.starring.includes(req.params.actorName)
-    ))
+    res.json(movies.filter(movie => movie.starring.includes(req.params.actorName)))
 })
 
-app.get ("/movies/:name", (req, res) =>{
-    // console.log(req.params.name)
-      //this is an object so we access with .name
-    // console.log in a back end project logs in the terminal 
-    res.json(movies.find(movie => movies.title === res.params.name))
+// GET "/movies/watched" — Returns only movies marked as watched
+// ⚠️ Same conflict issue — this route should also be moved above "/movies/:name"
+// otherwise Express will match "watched" as the :name parameter instead
+app.get("/movies/watched", (req, res) => {
+    res.json(movies.filter(movie => movie.watched))
+})
+
+// DELETE "/movies/:id" — Removes a movie from the list by id
+app.delete("/movies/:id", (req, res) => {
+    const id = parseInt(req.params.id) // req.params are always strings, parseInt converts to number so we can match against numeric ids
+    const index = movies.findIndex(movie => movie.id === id) // findIndex returns the position in the array, or -1 if not found
+
+    if (index === -1) {
+        return res.status(404).json({error: `No movie with id ${id}.`}) // 404 = Not Found. return stops the function so the code below doesn't run
+    }
+
+    const deletedMovie = movies.splice(index, 1) // splice(index, 1) removes 1 element at the given index and returns it as an array
+    res.json({message: "Deleted:", movie: deletedMovie})
+})
+
+// PATCH "/movies/:id/toggle-watched" — Flips the watched status of a movie (true → false or false → true)
+// PATCH is used for partial updates (vs PUT which replaces the whole object)
+app.patch("/movies/:id/toggle-watched", (req, res) => {
+    const id = parseInt(req.params.id)
+    const movie = movies.find(movie => movie.id === id)
+    movie.watched = !movie.watched // the ! (NOT) operator flips the boolean value
+    res.json({message: "Toggled watched status of:", movie: movie})
 })
 
 
+// ─────────────────────────────────────────────
+// POST "/movies" — Adds a new movie to the list
+// ─────────────────────────────────────────────
 
-// to assing an id number to any new movie posted we can 
-let counter = 20 // 20 because before adding any movies, the list had id from 1 to 19
+let counter = 20
+// counter starts at 20 because the existing movies have ids 1–19
+// it auto-increments with each new movie posted so every movie gets a unique id
 
-
-//Post Request usually requested by the user in the front end using a form
 app.post("/movies", (req, res) => {
-    counter++
-   const newMovie = {
-    id: counter,
-    title: req.body.title,
-    starring: req.body.starring,
-    year: req.body.year,
-    watched: false
-}
-console.log("newMovie:", newMovie) 
-    movies.push(newMovie)
-    res.status(201).json(newMovie)
+    counter++ // increment first to avoid reusing the previous id if the route is called multiple times
+    const newMovie = {
+        id: counter,         // unique id assigned automatically
+        title: req.body.title,       // req.body contains the data sent by the client in the request body
+        starring: req.body.starring,
+        year: req.body.year,
+        watched: false       // new movies default to unwatched
+    }
+
+    movies.push(newMovie) // adds the new movie to the in-memory array (resets on server restart since there's no real database)
+    res.status(201).json(newMovie) // 201 = Created, used instead of 200 to indicate a new resource was made
 })
-// we are adding this a movie to the list, check if the post reques works by  using this in a new terminal
+
+// To test the POST route with curl:
 // curl -X POST http://localhost:3000/movies -H "Content-Type: application/json" -d '{"title":"Inception","starring":["Leonardo DiCaprio","Marion Cotillard"],"year":2010}'
 
-
-
 const port = 3000
-//the server is going to be listening for requests in port 3000 (default)
 
+// app.listen() starts the server and keeps it running, waiting for incoming requests
 app.listen(port, () => {
     console.log(`Server running on port ${port}.`)
 })
-// In terminal we initiate our server by typing: node  (name of the file) node server.js now the server is listening for requests in the port http://localhost:3000/
 
+// To start the server, run in terminal: node server.js
+// Then visit: http://localhost:3000/
 
-//  Notes Routes:
-// Get"/"   Returns a message to let the user know the server is working
-// GET"/movies"      Return a list of all the movies in the mock database
-// GET"/movies/:name"    Return a specific movie
-// GET"/movies/:actor/:actorName"   Return all ,ovies associated with the given actor.
-// POST"/movies"   Add a new movie to the list 
-
-// "/movies" accepts a get and a post request
+// ─────────────────────────────────────────────
+// ROUTES SUMMARY
+// ─────────────────────────────────────────────
+// GET    "/"                            → Welcome message
+// GET    "/movies"                      → Returns all movies
+// GET    "/movies/:name"                → Returns one movie by title
+// GET    "/movies/actor/:actorName"     → Returns all movies by a specific actor ⚠️ move above /movies/:name
+// GET    "/movies/watched"              → Returns all watched movies ⚠️ move above /movies/:name
+// DELETE "/movies/:id"                 → Deletes a movie by id
+// PATCH  "/movies/:id/toggle-watched"  → Toggles the watched status of a movie
+// POST   "/movies"                     → Adds a new movie
