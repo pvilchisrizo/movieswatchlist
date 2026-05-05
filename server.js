@@ -3,9 +3,20 @@ import express from 'express'
 
 import movies from './movies.js'
 // imports the movies array from movies.js — this acts as our mock database
+const app = express() 
+app.use((req, res, next) => {
+    res.set(`Access-Control-Allow-Origin`, `*`)
 
-const app = express() // creates a new express application
+    if (req.method === `OPTIONS`) {
+        res.set(`Access-Control-Allow-Methods`, `POST`, `PATCH`, `DELETE`)
+        return res.sendStatus(204)
+    }
+    next()
+})
+
+// creates a new express application
 app.use(express.json()) // middleware that parses incoming requests with JSON bodies so we can access req.body
+
 
 // ─────────────────────────────────────────────
 // ROUTES
