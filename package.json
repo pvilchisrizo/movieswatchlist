@@ -1,14 +1,14 @@
 {
   "name": "movieswatchlist",
   "version": "1.0.0",
-  "description": "",
+  "description": "Express server for retriving a movie watchlist ",
   "license": "ISC",
   "author": "Paloma Vilchis",
   "type": "module",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "nodemon server.js"
   },
   "dependencies": {
     "express": "^5.2.1"

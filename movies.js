@@ -1,9 +1,21 @@
 const movies = [
-    {title: 'Mario Galaxy', starring: ['Chris Pratt', 'Anya Taylor Joy']},
-    {title: 'The Drama', starring: ['Zendaya', 'Robert Pattinson']},
-    {title: 'Scream 7', starring: ['Neve Campbell', 'Jasmin Savoy Brown']},
-    {title: 'You Me & Tuscany', starring: ['Regé-Jean Page', 'Halle Bailey']},
-    {title: 'Nirvana the Band the Show the Movie', starring: ['Matt Johnson', 'Jay McCarrol']},
-    {title: 'Hamnet', starring: ['Jessie Buckley', 'Paul Mescal']}
-  ]
+  {title:'Mario Galaxy',starring:['Chris Pratt','Anya Taylor-Joy'],year:2026,watched:false,id:1},
+  {title:'The Drama',starring:['Zendaya','Robert Pattinson'],year:2026,watched:false,id:2},
+  {title:'Scream 7',starring:['Neve Campbell','Jasmin Savoy Brown'],year:2026,watched:false,id:3},
+  {title:'You Me & Tuscany',starring:['Regé-Jean Page','Halle Bailey'],year:2026,watched:false,id:4},
+  {title:'Nirvanna the Band the Show the Movie',starring:['Matt Johnson','Jay McCarrol'],year:2025,watched:false,id:5},
+  {title:'Hamnet',starring:['Jessie Buckley','Paul Mescal'],year:2025,watched:false,id:6},
+  {title:'Gladiator 2',starring:['Paul Mescal','Denzel Washington'],year:2024,watched:false,id:7},
+  {title:'Friendship',starring:['Paul Rudd','Tim Robinson'],year:2024,watched:false,id:8},
+  {title:'Top Gun Maverick',starring:['Miles Teller','Glen Powell'],year:2022,watched:false,id:9},
+  {title:'Sinners',starring:['Michael B. Jordan','Hailee Steinfeld'],year:2025,watched:false,id:10},
+  {title:'The Gorge',starring:['Anya Taylor-Joy','Miles Teller'],year:2025,watched:false,id:11},
+  {title:'Eternity',starring:['Miles Teller','Elizabeth Olsen'],year:2025,watched:false,id:12},
+  {title:'High Life',starring:['Robert Pattinson','Juliette Binoche'],year:2018,watched:false,id:13},
+  {title:'Dune 2',starring:['Timothée Chalamet','Zendaya'],year:2024,watched:false,id:15},
+  {title:'Furiosa',starring:['Anya Taylor-Joy','Chris Hemsworth'],year:2024,watched:false,id:16},
+  {title:'Creed 3',starring:['Michael B. Jordan','Tessa Thompson'],year:2023,watched:false,id:17},
+  {title:'The Return',starring:['Ralph Fiennes', 'Juliette Binoche'],year:2024,watched:false,id:18},
+  {title:'Challengers',starring:['Zendaya',"Josh O'Connor"],year:2024,watched:false,id:19},
+]
 export default movies 
