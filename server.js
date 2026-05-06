@@ -8,7 +8,7 @@ app.use((req, res, next) => {
     res.set(`Access-Control-Allow-Origin`, `*`)
 
     if (req.method === `OPTIONS`) {
-        res.set(`Access-Control-Allow-Methods`, `POST`, `PATCH`, `DELETE`)
+        res.set(`Access-Control-Allow-Methods, POST, PATCH, DELETE`)
         return res.sendStatus(204)
     }
     next()
@@ -36,12 +36,16 @@ app.get("/", (req, res) => {
 app.get("/movies", (req, res) => {
     res.json(movies)
 })
+app.get("/movies/:name", (req, res) => {
+    res.json(movies.find(movie => movie.title === req.params.name))
+})
 
 // GET "/movies/actor/:actorName" — Returns all movies featuring a specific actor
 // .filter() returns an array of all matches (vs .find() which returns only the first)
 // .includes() checks if the starring array contains the given actor name
 // ⚠️ This route has a conflict with "/movies/:name" above — since :name catches everything,
 // "/movies/actor/:actorName" will never be reached. Move it above "/movies/:name" to fix this.
+
 app.get("/movies/actor/:actorName", (req, res) => {
     res.json(movies.filter(movie => movie.starring.includes(req.params.actorName)))
 })
